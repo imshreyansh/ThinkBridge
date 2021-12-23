@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import {View } from 'react-native';
+import { View } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { connect } from 'react-redux'
 import Dashboard from '../dashboard/Dashboard'
 import UploadImage from '../upload/UploadImage'
+import CategoryDetails from '../dashboard/CategoryDetails'
 class AuthLoadingScreen extends Component {
 
     constructor(props) {
@@ -17,7 +18,7 @@ class AuthLoadingScreen extends Component {
     componentDidMount() {
         this._isMounted = true
         if (this._isMounted) {
-    
+
         }
     }
 
@@ -31,9 +32,9 @@ class AuthLoadingScreen extends Component {
         const RootStack = createNativeStackNavigator();
         return (
             <View style={{ flex: 1 }}>
-                    <RootStack.Navigator>
-                        <RootStack.Screen name="UserStack" component={UserStack} options={{ headerShown: false }} />
-                    </RootStack.Navigator> 
+                <RootStack.Navigator>
+                    <RootStack.Screen name="UserStack" component={UserStack} options={{ headerShown: false }} />
+                </RootStack.Navigator>
             </View>
         )
     }
@@ -49,6 +50,7 @@ const UserStack = () => {
         <UserStackNavigator.Navigator>
             <UserStackNavigator.Screen name="Dashboard" component={Dashboard} options={{ headerShown: false }} />
             <UserStackNavigator.Screen name="UploadImage" component={UploadImage} options={{ headerShown: false }} />
+            <UserStackNavigator.Screen name="CategoryDetails" component={CategoryDetails} options={{ headerShown: false }} />
         </UserStackNavigator.Navigator>
     )
 }

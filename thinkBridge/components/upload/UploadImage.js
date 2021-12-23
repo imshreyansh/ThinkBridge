@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
-import { View, Text, Image, TouchableOpacity, TextInput, KeyboardAvoidingView, ScrollView, ImageBackground, StyleSheet, ActionSheetIOS, Modal, BackHandler,Permission } from 'react-native'
-import { h, w, width, height, Icon,  isTablet, fontFamily, fontFamilyBold } from '../../utils/helpers'
+import { View, Text, Image, TouchableOpacity, TextInput, KeyboardAvoidingView, ScrollView, ImageBackground, StyleSheet, ActionSheetIOS, Modal, BackHandler, Permission } from 'react-native'
+import { h, w, width, height, Icon, isTablet, fontFamily, fontFamilyBold } from '../../utils/helpers'
 import { connect } from 'react-redux'
-import {getAllCategory,addCategory} from '../../actions/categories'
+import { getAllCategory, addCategory, addPhotoInCategory } from '../../actions/categories'
 import * as ImagePicker from 'react-native-image-picker';
 import { request, PERMISSIONS, check, RESULTS } from 'react-native-permissions';
 
@@ -11,12 +11,13 @@ class UploadImages extends Component {
     constructor(props) {
         super(props)
         this.default = {
-            search:'',
-            categories:[],
-            categoryName:'',
-            modalVisible:false,
-            modalVisibleTwo:false,
-            imageURI: ''
+            search: '',
+            categories: [],
+            categoryName: '',
+            modalVisible: false,
+            modalVisibleTwo: false,
+            imageURI: '',
+            selectedCategoryToUpload: 'Landscape'
         }
         this.state = this.default
         this.props.dispatch(getAllCategory())
@@ -24,9 +25,9 @@ class UploadImages extends Component {
     componentDidMount() {
         this._isMounted = true
         if (this._isMounted) {
-            const {allCategories} =this.props
+            const { allCategories } = this.props
             this.setState({
-                categories:allCategories
+                categories: allCategories
             })
         }
     }
@@ -39,44 +40,55 @@ class UploadImages extends Component {
     componentDidUpdate(prevProps) {
         const { allCategories } = this.props
         if (prevProps.allCategories !== allCategories) {
-           this.setState({
-                categories:allCategories
-           })
+            this.setState({
+                categories: allCategories
+            })
         }
 
     }
 
-    setModalVisible = (status)=>{
+    setModalVisible = (status) => {
         this.setState({
-            modalVisible:status
+            modalVisible: status
         })
     }
 
-    setModalVisibleTwo = (status)=>{
+    setModalVisibleTwo = (status) => {
         this.setState({
-            modalVisibleTwo:status
+            modalVisibleTwo: status
         })
     }
 
-    addCategory = ()=>{
-        const {categoryName,categories} =this.state
-        const filterCheck = categories.filter(d=>(d.name).toLowerCase()===(categoryName).toLowerCase())
-        if(categoryName!=='' && filterCheck.length===0){
-            const obj={
-                name:categoryName,
-                photos:[]
+    addCategory = () => {
+        const { categoryName, categories } = this.state
+        const filterCheck = categories.filter(d => (d.name).toLowerCase() === (categoryName).toLowerCase())
+        if (categoryName !== '' && filterCheck.length === 0) {
+            const obj = {
+                name: categoryName,
+                photos: []
             }
             this.props.dispatch(addCategory(obj))
         }
         this.setModalVisible(false)
         this.setState({
-            categoryName:''
+            categoryName: ''
         })
     }
 
     onPressCont = () => {
-        const { imageURI} = this.state
-        console.log(imageURI)
+        const { imageURI, selectedCategoryToUpload } = this.state
+        const obj = {
+            name: selectedCategoryToUpload,
+            image: imageURI
+        }
+        this.props.dispatch(addPhotoInCategory(obj))
+    }
+
+    onSelectCategory = (name) => {
+        this.setState({
+            selectedCategoryToUpload: name
+        })
+        this.setModalVisibleTwo(true)
     }
 
     openCamera = () => {
@@ -103,7 +115,8 @@ class UploadImages extends Component {
                                                     name: response.assets[0].fileName,
                                                     uri: response.assets[0].uri,
                                                     type: response.assets[0].type,
-                                                    size: response.assets[0].fileSize
+                                                    size: response.assets[0].fileSize,
+                                                    isFav: false
                                                 }
                                             }, () => {
                                                 this.onPressCont()
@@ -132,7 +145,8 @@ class UploadImages extends Component {
                                             name: response.assets[0].fileName,
                                             uri: response.assets[0].uri,
                                             type: response.assets[0].type,
-                                            size: response.assets[0].fileSize
+                                            size: response.assets[0].fileSize,
+                                            isFav: false
                                         }
                                     }, () => {
                                         this.onPressCont()
@@ -170,7 +184,8 @@ class UploadImages extends Component {
                                                     name: response.assets[0].fileName,
                                                     uri: response.assets[0].uri,
                                                     type: response.assets[0].type,
-                                                    size: response.assets[0].fileSize
+                                                    size: response.assets[0].fileSize,
+                                                    isFav: false
                                                 }
                                             }, () => {
 
@@ -200,7 +215,8 @@ class UploadImages extends Component {
                                             name: response.assets[0].fileName,
                                             uri: response.assets[0].uri,
                                             type: response.assets[0].type,
-                                            size: response.assets[0].fileSize
+                                            size: response.assets[0].fileSize,
+                                            isFav: false
                                         }
                                     }, () => {
                                         this.onPressCont()
@@ -245,7 +261,8 @@ class UploadImages extends Component {
                                                     name: response.assets[0].fileName,
                                                     uri: response.assets[0].uri,
                                                     type: response.assets[0].type,
-                                                    size: response.assets[0].fileSize
+                                                    size: response.assets[0].fileSize,
+                                                    isFav: false
                                                 }
                                             }, () => {
                                                 this.onPressCont()
@@ -274,7 +291,8 @@ class UploadImages extends Component {
                                             name: response.assets[0].fileName,
                                             uri: response.assets[0].uri,
                                             type: response.assets[0].type,
-                                            size: response.assets[0].fileSize
+                                            size: response.assets[0].fileSize,
+                                            isFav: false
                                         }
                                     }, () => {
                                         this.onPressCont()
@@ -311,7 +329,8 @@ class UploadImages extends Component {
                                                     name: response.assets[0].fileName,
                                                     uri: response.assets[0].uri,
                                                     type: response.assets[0].type,
-                                                    size: response.assets[0].fileSize
+                                                    size: response.assets[0].fileSize,
+                                                    isFav: false
                                                 }
                                             }, () => {
                                                 this.onPressCont()
@@ -340,7 +359,8 @@ class UploadImages extends Component {
                                             name: response.assets[0].fileName,
                                             uri: response.assets[0].uri,
                                             type: response.assets[0].type,
-                                            size: response.assets[0].fileSize
+                                            size: response.assets[0].fileSize,
+                                            isFav: false
                                         }
                                     }, () => {
                                         this.onPressCont()
@@ -361,62 +381,62 @@ class UploadImages extends Component {
     }
 
     render() {
-        const {categories} =this.state
+        const { categories } = this.state
         return (
             <View style={styles.container}>
-             <TouchableOpacity onPress={()=>this.props.navigation.goBack()}>
-                 <View style={styles.divOne}>
-                    <Icon name="fi-rr-angle-left" style={styles.iconBack} size={width/18} color="#00" />
-                    <Text style={styles.headerText}>Upload Images</Text>
-                 </View>
-                 </TouchableOpacity>
-                 <ScrollView contentContainerStyle={styles.scroll}>
-                     <TouchableOpacity onPress={()=>this.setModalVisible(true)}>
-                    <View style={styles.addCategory}>
-                    <Icon name="fi-rr-add" style={styles.iconAdd} size={width/15} color="#880e4f" />
-                    <Text style={styles.categoryAddText}>Add Category</Text>
+                <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
+                    <View style={styles.divOne}>
+                        <Icon name="fi-rr-angle-left" style={styles.iconBack} size={width / 18} color="#00" />
+                        <Text style={styles.headerText}>Upload Images</Text>
                     </View>
+                </TouchableOpacity>
+                <ScrollView contentContainerStyle={styles.scroll}>
+                    <TouchableOpacity onPress={() => this.setModalVisible(true)}>
+                        <View style={styles.addCategory}>
+                            <Icon name="fi-rr-add" style={styles.iconAdd} size={width / 15} color="#880e4f" />
+                            <Text style={styles.categoryAddText}>Add Category</Text>
+                        </View>
                     </TouchableOpacity>
-                    {categories.map((data,index)=>{
-                        return(
-                            <TouchableOpacity onPress={() => this.setModalVisibleTwo(true)}>
-                            <View key={index} style={styles.addCategory}>
-                            <Text style={styles.categoryText}>{data.name}</Text>
-                            </View>
+                    {categories.map((data, index) => {
+                        return (
+                            <TouchableOpacity onPress={() => this.onSelectCategory(data.name)}>
+                                <View key={index} style={styles.addCategory}>
+                                    <Text style={styles.categoryText}>{data.name}</Text>
+                                </View>
                             </TouchableOpacity>
                         )
                     })}
-                 </ScrollView>
-                 <Modal
+                </ScrollView>
+                <Modal
                     transparent={true}
                     visible={this.state.modalVisible}
                 >
                     <View style={styles.modalOneDivOne}>
-                    <View style={styles.modalOneDivTwo}>
-                    <View style={styles.searchMainDiv}>
-                        <View style={styles.searchChildDiv}>
-                            <TextInput
-                                autoCapitalize='none'
-                                value={this.state.categoryName}
-                                onChangeText={(text) => this.setState({categoryName: text})}
-                                style={styles.searchBoxDiv}
-                                placeholder='Add Category'
-                                placeholderTextColor='grey'
-                            />
-                            <Icon name="fi-rr-add" size={width / 18} style={styles.iconBack} color="#880e4f" />
+                        <View style={styles.modalOneDivTwo}>
+                            <View style={styles.searchMainDiv}>
+                                <View style={styles.searchChildDiv}>
+                                    <TextInput
+                                        autoCapitalize='none'
+                                        value={this.state.categoryName}
+                                        onChangeText={(text) => this.setState({ categoryName: text })}
+                                        style={styles.searchBoxDiv}
+                                        placeholder='Add Category'
+                                        placeholderTextColor='grey'
+                                    />
+                                    <Icon name="fi-rr-add" size={width / 18} style={styles.iconBack} color="#880e4f" />
+                                </View>
+                            </View>
+                            <TouchableOpacity onPress={() => this.addCategory()}>
+                                <View style={styles.addDiv}>
+                                    <Text style={styles.textAdd}>Add</Text>
+                                </View>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => this.setModalVisible(false)}>
+                                <View style={styles.divCross}>
+                                    <Icon name="fi-rr-cross" size={width / 30} style={styles.iconBack} color="#fff" />
+                                </View>
+                            </TouchableOpacity>
                         </View>
-                    </View>
-                    <TouchableOpacity onPress={()=>this.addCategory()}>
-                    <View style={styles.addDiv}>
-                    <Text style={styles.textAdd}>Add</Text>
-                    </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={()=>this.setModalVisible(false)}>
-                    <View style={styles.divCross}>
-                        <Icon name="fi-rr-cross" size={width / 30} style={styles.iconBack} color="#fff" />
-                        </View>
-                    </TouchableOpacity>
-                    </View>
                     </View>
                 </Modal>
                 <Modal
@@ -444,176 +464,176 @@ class UploadImages extends Component {
 }
 
 const styles = StyleSheet.create({
-   container:{
-    flex: 1,
-     backgroundColor: '#ffe2ff'
-   },
-   divOne:{
-       width:w/1.1,
-       marginLeft:'auto',
-       marginRight:'auto',
-       marginTop:width/30,
-       flexDirection:'row'
-   },
-   iconBack:{
-       marginTop:'auto',
-       marginBottom:'auto',
-   },
-   headerText:{
-       fontSize:width/22,
-       fontFamily:fontFamily,
-       color:'#000',
-       marginLeft:width/30
-   },
-   scroll:{
-       paddingBottom:width/30
-   },
-   addCategory:{
-       width:w/1.1,
-       marginLeft:'auto',
-       marginRight:'auto',
-       flexDirection:'row',
-       marginTop:width/20,
-       borderBottomWidth:0.5,
-       borderBottomColor:'grey',
-       paddingBottom:width/60
-   },
-   iconAdd:{
-       marginTop:'auto',
-       marginBottom:'auto'
-   },
-   categoryAddText:{
-    fontSize:width/22,
-    fontFamily:fontFamilyBold,
-    color:'#880e4f',
-    marginLeft:width/30
-   },
-   categoryText:{
-    fontSize:width/25,
-    fontFamily:fontFamily,
-    color:'#880e4f',
-    marginLeft:width/30
-   },
-   modalOneDivOne:{
-       marginTop:'auto',
-       marginBottom:'auto',
-   },
-   modalOneDivTwo:{
-    backgroundColor: '#fff', 
-    marginLeft: 'auto', 
-    marginRight: 'auto', 
-    width: w / 1.1, 
-    borderRadius: 8, 
-    padding: width / 30, 
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.5,
-    shadowRadius: 2,
-    elevation: 2,
-    justifyContent:'center',
-    alignItems: 'center',
-},
-searchMainDiv:{
-    width: w / 1.2,
-    marginLeft: 'auto', 
-    marginRight: 'auto', 
-    marginTop: width / 30, 
-    flexDirection: 'row', 
-    justifyContent:'center',
-    alignItems: 'center',
-   },
-   searchChildDiv:{
-    flexDirection: 'row',
-    borderWidth: 1,
-    borderRadius: w / 40,
-    borderColor: '#880e4f', 
-    backgroundColor: '#fff', 
-    width: w / 1.3, 
-    height: width / 8
-   },
-   searchBoxDiv:{
-    fontSize: width / 28, 
-    fontFamily: fontFamily, 
-    color: '#333', 
-    width: w / 1.5, 
-    height: width / 8, 
-    paddingLeft: width / 30, 
-    paddingBottom: 'auto', 
-    paddingTop: 'auto',
-   },
-   divCross:{
-    width: width / 12, 
-    height: width / 12, 
-    borderRadius: width / 24, 
-    backgroundColor: '#c62828', 
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.5,
-    shadowRadius: 2,
-    elevation: 2,
-    marginTop:width/30
-},
-addDiv:{
-    width:width/3,
-    padding:width/50,
-    borderRadius:5,
-    marginLeft:'auto',
-    marginRight:'auto',
-    backgroundColor: '#880e4f',
-    marginTop:width/30
-},
-textAdd:{
-    textAlign: 'center',
-    fontFamily: fontFamily,
-    fontSize:width/25,
-    color:'#fff'
-},
-modalTwoDivOne:{
-    bottom: 0, position:'absolute',
-    backgroundColor: 'white', 
-    paddingBottom: width / 15, 
-    width: w, 
-    borderTopLeftRadius: width / 10, 
-    borderTopRightRadius: width / 10, 
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.5,
-    shadowRadius: 2,
-    elevation: 2,
-},
-modalTwoDivTwo: {
-    flexDirection: 'row', 
-    justifyContent: 'flex-end', 
-    width: w / 1.2, 
-    marginLeft: 'auto', 
-    marginRight: 'auto', 
-    marginTop: width / 20 
-},
-modalTwoIcons:{ 
-    marginLeft: 'auto', 
-    marginTop: 'auto', 
-    marginBottom: 'auto', 
-    marginRight: 'auto' 
-},
-modalTwoText:{ 
-    width: w / 1.5, 
-    marginLeft: 'auto', 
-    marginRight: 'auto', 
-    borderBottomColor: 'grey', 
-    color: '#19164e', 
-    fontSize: width / 22, 
-    fontFamily: fontFamilyBold, 
-    textAlign: 'center', 
-    borderBottomWidth: 1, 
-    paddingBottom: width / 50, 
-    marginTop: width / 30,
-}
-  });
+    container: {
+        flex: 1,
+        backgroundColor: '#ffe2ff'
+    },
+    divOne: {
+        width: w / 1.1,
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        marginTop: width / 30,
+        flexDirection: 'row'
+    },
+    iconBack: {
+        marginTop: 'auto',
+        marginBottom: 'auto',
+    },
+    headerText: {
+        fontSize: width / 22,
+        fontFamily: fontFamily,
+        color: '#000',
+        marginLeft: width / 30
+    },
+    scroll: {
+        paddingBottom: width / 30
+    },
+    addCategory: {
+        width: w / 1.1,
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        flexDirection: 'row',
+        marginTop: width / 20,
+        borderBottomWidth: 0.5,
+        borderBottomColor: 'grey',
+        paddingBottom: width / 60
+    },
+    iconAdd: {
+        marginTop: 'auto',
+        marginBottom: 'auto'
+    },
+    categoryAddText: {
+        fontSize: width / 22,
+        fontFamily: fontFamilyBold,
+        color: '#880e4f',
+        marginLeft: width / 30
+    },
+    categoryText: {
+        fontSize: width / 25,
+        fontFamily: fontFamily,
+        color: '#880e4f',
+        marginLeft: width / 30
+    },
+    modalOneDivOne: {
+        marginTop: 'auto',
+        marginBottom: 'auto',
+    },
+    modalOneDivTwo: {
+        backgroundColor: '#fff',
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        width: w / 1.1,
+        borderRadius: 8,
+        padding: width / 30,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.5,
+        shadowRadius: 2,
+        elevation: 2,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    searchMainDiv: {
+        width: w / 1.2,
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        marginTop: width / 30,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    searchChildDiv: {
+        flexDirection: 'row',
+        borderWidth: 1,
+        borderRadius: w / 40,
+        borderColor: '#880e4f',
+        backgroundColor: '#fff',
+        width: w / 1.3,
+        height: width / 8
+    },
+    searchBoxDiv: {
+        fontSize: width / 28,
+        fontFamily: fontFamily,
+        color: '#333',
+        width: w / 1.5,
+        height: width / 8,
+        paddingLeft: width / 30,
+        paddingBottom: 'auto',
+        paddingTop: 'auto',
+    },
+    divCross: {
+        width: width / 12,
+        height: width / 12,
+        borderRadius: width / 24,
+        backgroundColor: '#c62828',
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.5,
+        shadowRadius: 2,
+        elevation: 2,
+        marginTop: width / 30
+    },
+    addDiv: {
+        width: width / 3,
+        padding: width / 50,
+        borderRadius: 5,
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        backgroundColor: '#880e4f',
+        marginTop: width / 30
+    },
+    textAdd: {
+        textAlign: 'center',
+        fontFamily: fontFamily,
+        fontSize: width / 25,
+        color: '#fff'
+    },
+    modalTwoDivOne: {
+        bottom: 0, position: 'absolute',
+        backgroundColor: 'white',
+        paddingBottom: width / 15,
+        width: w,
+        borderTopLeftRadius: width / 10,
+        borderTopRightRadius: width / 10,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.5,
+        shadowRadius: 2,
+        elevation: 2,
+    },
+    modalTwoDivTwo: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        width: w / 1.2,
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        marginTop: width / 20
+    },
+    modalTwoIcons: {
+        marginLeft: 'auto',
+        marginTop: 'auto',
+        marginBottom: 'auto',
+        marginRight: 'auto'
+    },
+    modalTwoText: {
+        width: w / 1.5,
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        borderBottomColor: 'grey',
+        color: '#19164e',
+        fontSize: width / 22,
+        fontFamily: fontFamilyBold,
+        textAlign: 'center',
+        borderBottomWidth: 1,
+        paddingBottom: width / 50,
+        marginTop: width / 30,
+    }
+});
 
 
 function mapStateToProps(data) {
     return {
-      allCategories:data.categories.categories
+        allCategories: data.categories.categories
     }
 }
 
