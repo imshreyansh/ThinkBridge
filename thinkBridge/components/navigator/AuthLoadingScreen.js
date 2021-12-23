@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import Dashboard from '../dashboard/Dashboard'
 import UploadImage from '../upload/UploadImage'
 import CategoryDetails from '../dashboard/CategoryDetails'
+import Favourites from '../dashboard/Favourites'
 class AuthLoadingScreen extends Component {
 
     constructor(props) {
@@ -51,6 +52,7 @@ const UserStack = () => {
             <UserStackNavigator.Screen name="Dashboard" component={Dashboard} options={{ headerShown: false }} />
             <UserStackNavigator.Screen name="UploadImage" component={UploadImage} options={{ headerShown: false }} />
             <UserStackNavigator.Screen name="CategoryDetails" component={CategoryDetails} options={{ headerShown: false }} />
+            <UserStackNavigator.Screen name="Favourites" component={Favourites} options={{ headerShown: false }} />
         </UserStackNavigator.Navigator>
     )
 }

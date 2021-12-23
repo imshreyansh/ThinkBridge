@@ -74,7 +74,7 @@ class Home extends Component {
             <View style={styles.container}>
                 <ImageBackground source={bg} resizeMode='stretch' style={styles.imageBackground}>
                     <View style={styles.imageBackgroundViewOne}>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('Favourites')}>
                             <View style={styles.addCategoryAndFavourites}>
                                 <Icon name="fi-sr-heart" style={styles.icon} size={width / 15} color="#ff56b9" />
                             </View>
